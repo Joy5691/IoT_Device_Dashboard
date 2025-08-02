@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Device - IoT Energy Monitoring Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <a href="index.html">Introduction</a>
+  <a href="device.html" class="active">Device</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="cost-analysis.html">Cost Analysis</a>
+  <a href="report.html">Report</a>
+  <a href="controls.html">Control</a>
+</nav>
+<div class="container">
+  <h1>Device Details</h1>
+  <div class="highlight-card" style="display:flex;flex-direction:row;gap:2em;align-items:center;flex-wrap:wrap;">
+    <img src="iot.jpg" alt="IoT device" style="width:190px;max-width:45vw;border-radius:14px;box-shadow:0 0 22px #35b7ff35;">
+    <div style="flex:1">
+      <b class="section-title">TOMZN 63A WiFi Smart Switch (Tuya)</b>
+      <ul>
+        <li>Monitors voltage, current, power, energy in real-time</li>
+        <li>Data sent via WiFi to Tuya cloud (Smart Life app)</li>
+        <li>Rated: 63A / up to 13kW (safety beyond fridge load) | BDT 2,400</li>
+        <li style="color:#fff176;">Easy dashboard integration, robust for learning &amp; savings</li>
+      </ul>
+    </div>
+  </div>
+  <div class="summary-cards">
+    <div class="summary-card" style="min-width:210px;">
+      <h4>Installation</h4>
+      Professionally wired on fridge line for full-cycle monitoring.
+    </div>
+    <div class="summary-card" style="min-width:210px;">
+      <h4>Platform</h4>
+      Tuya Smart Life App tracks and visualizes energy instantly.
+    </div>
+    <div class="summary-card" style="min-width:210px;">
+      <h4>Data Export</h4>
+      Used Tuya Developer portal to extract CSV file for dashboard.
+    </div><br><br>
+  </div>
+  <div class="highlight-card" style="display:flex;flex-direction:row;gap:2em;align-items:center;flex-wrap:wrap;">
+    <img src="ref.jpg" alt="Refrigerator" style="width:140px;max-width:38vw;border-radius:10px;box-shadow:0 0 14px #abb3ba;">
+    <div style="flex:1">
+      <b class="section-title">Monitored Appliance: Refrigerator</b><br><br>
+      <p style="margin-top:-.3em;">(Model: GL-G252RLBB) The household refrigerator runs 24/7, with high start-up and cycling consumption. It is a key candidate for practical energy saving and green computing projects.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

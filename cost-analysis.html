@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cost Analysis - IoT Energy Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<nav>
+  <a href="index.html">Introduction</a>
+  <a href="device.html">Device</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="cost-analysis.html" class="active">Cost Analysis</a>
+  <a href="report.html">Report</a>
+  <a href="controls.html">Control</a>
+</nav>
+<div class="container">
+  <h1>Cost Analysis</h1>
+  <div class="summary-cards">
+    <div class="summary-card" style="min-width:220px;">
+      <h4>Cost per kWh</h4>
+      <span style="color:#fff176;font-size:1.13em;">7.11 BDT</span>
+    </div>
+    <div class="summary-card" id="ca-energy"></div>
+    <div class="summary-card" id="ca-cost"></div>
+  </div>
+  <div class="chart-box"><canvas id="chartDaily"></canvas></div>
+  <div class="chart-box"><canvas id="chartCost"></canvas></div>
+</div>
+<script>
+function getDayNo(i, t) {
+  if (t.endsWith("PM")) { if (parseInt(t.split(':')[0]) === 12) return 1; return 1; }
+  if (t.endsWith("AM")) {
+    let hour = parseInt(t.split(':')[0]);
+    if (hour === 12) return 2;
+    return 2;
+  }
+  return 1;
+}
+Papa.parse('data.csv',{
+  download:true,header:true,
+  complete:results=>{
+    const data = results.data.filter(r=>r['Time']);
+    const BDT_PER_KWH=7.11, deltas=5/60;
+    let dayLabels = [], dayArr = [], dayCost = [];
+    let dayTotals = {}, costTotals = {};
+    for (let i=0; i<data.length; i++) {
+        const row=data[i], t=row['Time'], day=getDayNo(i, t);
+        let p=Number(row['Active Power (kW)']), tdelta=p*deltas;
+        if (!dayTotals[day]) { dayTotals[day]=0; costTotals[day]=0; }
+        dayTotals[day] += tdelta;
+        costTotals[day] += tdelta*BDT_PER_KWH;
+    }
+    for (let di=1; di<=2; di++) {
+      dayLabels.push(di === 1 ? "1st August 2025" : "2nd August 2025");
+      dayArr.push(dayTotals[di]||0);
+      dayCost.push(costTotals[di]||0);
+    }
+    let grandTotalEnergy = Object.values(dayTotals).reduce((a,b)=>a+b,0);
+    let grandTotalCost   = Object.values(costTotals).reduce((a,b)=>a+b,0);
+
+    document.getElementById('ca-energy').innerHTML = `<h4>Total Energy</h4>${grandTotalEnergy.toFixed(2)} kWh`;
+    document.getElementById('ca-cost').innerHTML = `<h4>Total Cost</h4>${grandTotalCost.toFixed(2)} BDT`;
+
+    new Chart(document.getElementById('chartDaily'),{
+      type:'bar',
+      data: { labels: dayLabels, datasets: [{label:'Energy (kWh)',data:dayArr,backgroundColor:'#35b7ff'}] },
+      options:{
+        plugins:{title:{display:true,text:'Daily Energy Usage (kWh)',color:'#f2f3f7',font:{size:18}}},
+        animation:{duration:1900, easing:'easeInOutExpo'},
+        scales:{
+          x:{grid:{color:'#232327'},ticks:{color:'#f2f3f7'}},
+          y:{grid:{color:'#232327'},ticks:{color:'#f2f3f7'},beginAtZero:true}
+        }
+      }
+    });
+    new Chart(document.getElementById('chartCost'),{
+      type:'bar',
+      data: { labels: dayLabels, datasets:[{label:'Total Cost (BDT)',data:dayCost,backgroundColor:'#8dffe6'}] },
+      options:{
+        plugins:{title:{display:true,text:'Daily Cost (BDT)',color:'#f2f3f7',font:{size:18}}},
+        animation:{duration:1500,easing:'easeInOutBack'},
+        scales:{
+          x:{grid:{color:'#232327'},ticks:{color:'#f2f3f7'}},
+          y:{grid:{color:'#232327'},ticks:{color:'#f2f3f7'},beginAtZero:true}
+        }
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>

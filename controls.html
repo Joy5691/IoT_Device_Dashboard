@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Device Control - IoT Energy Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav>
+  <a href="index.html">Introduction</a>
+  <a href="device.html">Device</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="cost-analysis.html">Cost Analysis</a>
+  <a href="report.html">Report</a>
+  <a href="controls.html" class="active">Control</a>
+</nav>
+<div class="container">
+  <h1>Device Control</h1>
+  <div class="highlight-card" style="max-width:430px;">
+    <div>
+      <button id="onoff" class="button">Turn OFF</button>
+      <div id="status" style="margin-top:1em;font-weight:bold;">Device is <span style="color:#35b7ff;">ON</span></div>
+    </div>
+  </div>
+</div>
+<script>
+let devOn = true;
+document.getElementById('onoff').onclick = function(){
+  devOn = !devOn;
+  this.className = 'button '+(devOn?'':'off');
+  this.textContent = devOn ? 'Turn OFF' : 'Turn ON';
+  document.getElementById('status').innerHTML =
+    devOn ? 'Device is <span style="color:#35b7ff;">ON</span>'
+          : 'Device is <span style="color:#d85353;">OFF</span>';
+}
+</script>
+</body>
+</html>

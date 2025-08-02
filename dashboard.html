@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - IoT Energy Monitoring</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<nav>
+  <a href="index.html">Introduction</a>
+  <a href="device.html">Device</a>
+  <a href="dashboard.html" class="active">Dashboard</a>
+  <a href="cost-analysis.html">Cost Analysis</a>
+  <a href="report.html">Report</a>
+  <a href="controls.html">Control</a>
+</nav>
+<div class="container">
+  <h1>Dashboard</h1>
+  <div class="metrics" id="metrics"></div>
+
+  <!-- Search and Filter for Table -->
+  <div class="highlight-card" style="padding:1em 2em 1em 2em; margin-bottom:.7em;">
+    <div style="display:flex;flex-wrap:wrap;gap:1.1em;align-items:center;justify-content:space-between;">
+      <input id="tableSearch" type="text" placeholder="Search all columns..." 
+        style="flex:1 1 210px;min-width:180px;padding:10px 1em;border-radius:7px;border:none;font-size:1em;background:#232327;color:#f2f3f7;box-shadow:0 0 7px #35b7ff18;outline:none;" >
+      <div style="flex:1 1 210px;min-width:180px;">
+        <label for="colFilter" style="color:#abb3ba;font-weight:500;font-size:1em;">Filter by column:</label>
+        <select id="colFilter" style="margin-left:.6em;padding:8px;border-radius:6px;border:1.2px solid #353637;background:#1c1c24;color:#fff;font-size:1em;">
+          <option value="">--Select column--</option>
+          <option value="0">Time</option>
+          <option value="1">Voltage (V)</option>
+          <option value="2">Current (A)</option>
+          <option value="3">Frequency (Hz)</option>
+          <option value="4">Active Power (kW)</option>
+          <option value="5">Power Factor</option>
+        </select>
+        <span id="filterValueHolder"></span>
+      </div>
+    </div>
+    <div style="margin-top:.8em;">
+      <input id="colFilterValue" type="text" placeholder="Column filter value..." 
+        style="min-width:140px;padding:10px 1em;border-radius:7px;border:none;font-size:1em;background:#232327;color:#f2f3f7;box-shadow:0 0 4px #35b7ff18;margin-right:10px;outline:none;display:none;">
+      <button id="clearFilters" class="button" style="padding:7px 20px;font-size:.97em;display:none;">Clear Filters</button>
+    </div>
+  </div>
+
+  <div class="table-scroll" id="data-table"></div>
+
+  <div class="chart-box"><canvas id="chartVoltage" height="115"></canvas></div>
+  <div class="chart-box"><canvas id="chartCurrent" height="115"></canvas></div>
+  <div class="chart-box"><canvas id="chartFreq" height="115"></canvas></div>
+  <div class="chart-box"><canvas id="chartPower" height="115"></canvas></div>
+  <div class="chart-box"><canvas id="scatterPV" height="115"></canvas></div>
+  <div class="chart-box"><canvas id="scatterPC" height="115"></canvas></div>
+  <div style="color:#abb3ba;font-size:14px;margin-top:14px;">Use search or the column filter for quick navigation. Charts animate and are interactive.</div>
+</div>
+<script>
+const colorSet = [
+  "#35b7ff", "#8dffe6", "#fff176", "#ff6978", "#abb3ba", "#edf0f2"
+], BDT_PER_KWH = 7.11;
+
+let fullRows = [];
+
+Papa.parse('data.csv', {
+  download: true, header: true,
+  complete: (results) => {
+    const data = results.data.filter(r => r['Time']);
+    fullRows = data; // Save for table filtering!
+    let time=[], voltage=[], current=[], freq=[], power=[], pf=[];
+    data.forEach(row=>{
+      time.push(row['Time']);
+      voltage.push(Number(row['Voltage (V)']));
+      current.push(Number(row['Current (A)']));
+      freq.push(Number(row['Frequency (Hz)']));
+      power.push(Number(row['Active Power (kW)']));
+      pf.push(Number(row['Power Factor']));
+    });
+    let deltas = 0.0833, totalEnergy = power.reduce((sum,p)=>sum+p*deltas,0),
+        avgPower = avg(power)*1000, avgCurr=avg(current), avgPF=avg(pf),
+        totalCost = totalEnergy * BDT_PER_KWH;
+
+    // Metrics
+    document.getElementById('metrics').innerHTML = `
+      <div class="metric"><b>Avg Wattage</b><br>${avgPower.toFixed(2)} W</div>
+      <div class="metric"><b>Avg Current</b><br>${avgCurr.toFixed(3)} A</div>
+      <div class="metric"><b>Total Energy</b><br>${totalEnergy.toFixed(2)} kWh</div>
+      <div class="metric"><b>Total Cost</b><br>${totalCost.toFixed(2)} BDT</div>
+      <div class="metric"><b>Avg Power Factor</b><br>${avgPF.toFixed(3)}</div>
+    `;
+
+    renderTable(fullRows);
+
+    // Table global search
+    document.getElementById("tableSearch").addEventListener("input", function() {
+      filterTable();
+    });
+
+    // Column filter
+    document.getElementById("colFilter").addEventListener("change", function() {
+      document.getElementById("colFilterValue").style.display = this.value !== "" ? "" : "none";
+      document.getElementById("clearFilters").style.display = this.value !== "" ? "" : "none";
+      document.getElementById("tableSearch").value = "";
+      filterTable();
+    });
+    document.getElementById("colFilterValue").addEventListener("input", filterTable);
+    document.getElementById("clearFilters").addEventListener("click", function(){
+      document.getElementById("colFilter").value = "";
+      document.getElementById("colFilterValue").value = "";
+      document.getElementById("colFilterValue").style.display="none";
+      this.style.display="none";
+      filterTable();
+    });
+
+    // Charts
+    quickLine('chartVoltage', 'Voltage Over Time', time, voltage, 'Voltage (V)', colorSet[0]);
+    quickLine('chartCurrent', 'Current Over Time', time, current, 'Current (A)', colorSet[1]);
+    quickLine('chartFreq', 'Frequency Over Time', time, freq, 'Frequency (Hz)', colorSet[2]);
+    quickLine('chartPower', 'Power Over Time', time, power.map(x => x*1000), 'Power (W)', colorSet[0]);
+    quickScatter2d('scatterPV','Power vs Voltage',voltage,power.map(x => x*1000),'V','W',colorSet[4]);
+    quickScatter2d('scatterPC','Power vs Current',current,power.map(x => x*1000),'A','W',colorSet[1]);
+  }
+});
+
+function avg(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length;}
+function renderTable(rows) {
+  let html = `<table><tr>
+    <th>Time</th><th>Voltage (V)</th><th>Current (A)</th>
+    <th>Frequency (Hz)</th><th>Active Power (kW)</th><th>Power Factor</th>
+  </tr>`;
+  rows.forEach(row=>{
+    html += `<tr>
+      <td>${row['Time']}</td><td>${row['Voltage (V)']}</td><td>${row['Current (A)']}</td>
+      <td>${row['Frequency (Hz)']}</td><td>${row['Active Power (kW)']}</td><td>${row['Power Factor']}</td>
+    </tr>`;
+  });
+  html += `</table>`;
+  document.getElementById('data-table').innerHTML = html;
+}
+// Combined filter: global search + column filter
+function filterTable() {
+  let searchVal = document.getElementById("tableSearch").value.toLowerCase();
+  let colIdx = document.getElementById("colFilter").value;
+  let colVal = document.getElementById("colFilterValue").value.toLowerCase();
+  let rows = fullRows;
+
+  // Filter
+  if (colIdx !== "" && colVal !== "") {
+    // Column value match
+    const colNames = ['Time','Voltage (V)','Current (A)','Frequency (Hz)','Active Power (kW)','Power Factor'];
+    let key = colNames[Number(colIdx)];
+    rows = rows.filter(row => row[key].toString().toLowerCase().includes(colVal));
+  }
+  if (searchVal !== "") {
+    // General text match
+    rows = rows.filter(row =>
+      Object.values(row).some(cell => (cell||'').toString().toLowerCase().includes(searchVal))
+    );
+  }
+  renderTable(rows);
+}
+
+function quickLine(cid,label,x,y,ylab,color){
+  new Chart(document.getElementById(cid), {
+    type: 'line',
+    data: {labels: x, datasets: [{ label: ylab, data: y, borderColor: color,
+    backgroundColor: 'rgba(53,183,255,0.08)', tension:0.18, pointRadius:1.7 }]},
+    options: {
+      animation: { duration: 1500, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: label, color: "#f2f3f7", font:{ size:17 } }
+      },
+      scales: {
+        x: { grid: { color:'#232327' }, ticks: { color:'#f2f3f7' } },
+        y: { beginAtZero: false, grid: { color:'#232327' }, ticks: { color:'#f2f3f7' } }
+      }
+    }
+  });
+}
+function quickScatter2d(cid,label,x,y,xlab,ylab,color){
+  new Chart(document.getElementById(cid), {
+    type: 'scatter',
+    data: { datasets: [{
+      label: `${ylab} vs. ${xlab}`,
+      data: x.map((xi,i)=>({x:xi, y:y[i]})),
+      backgroundColor: color, pointRadius:2.2, showLine: false
+    }]},
+    options:{
+      animation: { duration: 1500, easing: 'easeOutCirc' },
+      plugins:{ legend:{ display:false },
+        title:{ display:true, text:label, color:"#f2f3f7", font:{ size:17 } }
+      },
+      scales: {
+        x: { title:{ display:true, text:xlab, color:'#f2f3f7' }, grid: { color:'#232327' }, ticks:{ color:'#f2f3f7' }},
+        y: { title:{ display:true, text:ylab, color:'#f2f3f7' }, grid: { color:'#232327' }, ticks:{ color:'#f2f3f7' }}
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>

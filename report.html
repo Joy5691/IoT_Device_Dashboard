@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report - IoT Energy Monitoring Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      .section-title { 
+        color: #35b7ff; 
+        margin-top: 2em;
+        font-size: 1.24em; 
+        font-weight: 800;
+        border-left: 4px solid #35b7ff;
+        padding-left: .6em;
+        margin-bottom:.6em;
+      }
+      .highlight-card {
+        background: linear-gradient(100deg, #222226 80%, #45474c 100%);
+        box-shadow: 0 6px 40px #35b7ff22;
+        border: 1.5px solid #2e77a8;
+        border-left: 7px solid #35b7ff;
+        border-radius: 13px;
+        padding: 1.7em 2.2em 1.5em 2.2em;
+        margin-bottom: 2em;
+        margin-top:1.4em;
+      }
+      .summary-cards {
+        display:flex;gap:1.5em;flex-wrap:wrap;margin:1.2em 0 2em 0;
+      }
+      .summary-card {
+        flex:1 1 250px;
+        background: linear-gradient(120deg,#232327 75%,#2d3135 100%);
+        border: 1px solid #353637;
+        box-shadow: 0 4px 22px #35b7ff24;
+        border-radius: 11px;
+        color: #e1edff;
+        padding:1.6em 1.1em 1.2em 1.2em;
+        font-size:1.08em;font-weight:600;
+        margin-bottom:1em;
+        transition: box-shadow .2s,background .15s;
+      }
+      .summary-card h4{color:#35b7ff;margin:.2em 0;}
+      .summary-card:hover{background:#353637;color:#fff;box-shadow:0 6px 28px #35b7ff44;}
+      .report-table { width:100%; border-collapse:collapse; margin: 1.2em 0;}
+      .report-table th, .report-table td { border: 1px solid #353637; padding: 7px 15px;}
+      .report-table th { background: #2e77a8; color:#fff; }
+      .report-table td { background: #232327; color: #bbcbdb;}
+      .swot-pestle-row{display:flex;gap:2.2em;flex-wrap:wrap;margin-bottom:1.3em;}
+      .swotcol,.pestlecol{flex:1 1 280px;}
+      .swotcol ul,.pestlecol ul{margin:0;padding-left:1.2em;}
+      @media (max-width:800px){
+        .summary-cards{flex-direction:column;}
+        .swot-pestle-row{flex-direction:column;}
+      }
+    </style>
+</head>
+<body>
+<nav>
+  <a href="index.html">Introduction</a>
+  <a href="device.html">Device</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="cost-analysis.html">Cost Analysis</a>
+  <a href="report.html" class="active">Report</a>
+  <a href="controls.html">Control</a>
+</nav>
+<div class="container">
+  <h1>Project Report</h1>
+  <div style="color:#8dffe6; font-weight:bold; font-size:1.1em; margin-bottom:1.9em;">
+    IoT-Based Real-Time Energy Monitoring &amp; Cost Analysis <br>
+    <span style="color:#abb3ba;">by Khalid Mahmud Joy | ID: 2022-3-60-159</span>
+  </div>
+
+  <!-- Executive Summary Card -->
+  <div class="highlight-card">
+    <span class="section-title">Executive Summary</span>
+    <p>
+      This project demonstrates a practical IoT solution for <b style="color:#8dffe6;">green computing</b> by monitoring the real-world energy usage of a household refrigerator. 
+      <span style="color:#fff176;">TOMZN 63A WiFi Smart Switch</span> was integrated with the Tuya Smart Life cloud, logging core metrics (<b>voltage, current, power, energy</b>) every 5 minutes for analytics, cost, and dashboard visualization. 
+      The results show that simple, affordable IoT tech can empower daily energy awareness, ROI, and science-based home efficiency.
+    </p>
+    <ul>
+      <li><b>Device/Platform:</b> TOMZN 63A Switch + Tuya Cloud</li>
+      <li><b>Data Metrics:</b> Voltage (V), Current (A), Power (W), Power Factor, Timestamp</li>
+      <li><b>Outcome:</b> Interactive dashboard, daily costs, clear energy trends, control demo, PESTLE &amp; SWOT analysis</li>
+    </ul>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <div class="summary-card">
+      <h4>Key Hardware</h4>
+      TOMZN 63A WiFi<br>
+      <span style="font-size:.99em;color:#89cfff;">High-safety, Tuya cloud, 2,800 BDT</span>
+    </div>
+    <div class="summary-card">
+      <h4>Daily Cost</h4>
+      <span id="report-daily-cost" style="font-size:1.16em; color:#fff176;">~7.11 BDT/kWh</span>
+    </div>
+    <div class="summary-card">
+      <h4>Data Coverage</h4>
+      <span style="color:#abb3ba;">2 days, 5-minutes interval,<br>full “fridge cycle” profile</span>
+    </div>
+    <div class="summary-card">
+      <h4>Payback</h4>
+      <span style="font-size:1.07em; color:#8dffe6;">Estimated 9-12 months</span>
+    </div>
+  </div>
+
+  <div class="section-title">Methodology &amp; Workflow</div>
+  <ol style="margin-left:.7em; margin-bottom:1.6em;">
+    <li><b>Planning &amp; Research:</b> Selected refrigerator for continuous, high-impact measurement.</li>
+    <li><b>Device Setup:</b> Procured and installed TOMZN IoT switch (see Device page), connected via WiFi to Tuya Smart Life.</li>
+    <li><b>Data Collection:</b> Ran live data logging for over 24 hours at 5-min sampling rate.</li>
+    <li><b>CSV Data Extraction:</b> Used Tuya developer console to extract and clean time-series CSV for processing.</li>
+    <li><b>Dashboard Analytics:</b> Live CSV parsed with PapaParse and visualized in browser using Chart.js for cards/charts, including cost math and per-minute trends.</li>
+    <li><b>Report, ROI, and Recommendations:</b> Documented cost, safety, environmental and scaling impacts in this report.</li>
+  </ol>
+
+  <div class="section-title">Cost Table</div>
+  <table class="report-table">
+    <tr>
+      <th>Description</th><th>Quantity</th><th>Unit Cost (BDT)</th><th>Total (BDT)</th><th>Remarks</th>
+    </tr>
+    <tr>
+      <td>TOMZN 63A WiFi Smart Switch</td><td>1</td><td>2,500</td><td>2,500</td><td>Invoice attached</td>
+    </tr>
+    <tr>
+      <td>Wiring and Enclosure</td><td>1</td><td>300</td><td>300</td><td>Standard wiring</td>
+    </tr>
+    <tr>
+      <td style="font-weight:bold;">Total</td><td></td><td></td><td style="font-weight:bold;color:#fff176;">2,800</td><td></td>
+    </tr>
+  </table>
+
+  <div class="highlight-card" style="margin-bottom:2em;">
+    <span class="section-title">Challenges</span>
+    <ul>
+      <li><b>Data Export:</b> Tuya platform offered no easy CSV export. Overcome using developer API and manual cleanup.</li>
+      <li><b>JavaScript Analytics:</b> Required PapaParse/Chart.js for visualizing and processing data in the browser.</li>
+      <li><b>Sampling Rate:</b> Five-minute intervals can miss power surges, but mean and profile are robust for daily use.</li>
+      <li><b>Electrical Safety:</b> All installation done by qualified personnel. The rated device is ~40x the fridge load for safety.</li>
+    </ul>
+  </div>
+
+  <div class="section-title">Key Results & Analysis</div>
+  <ul style="margin-left:.7em;">
+    <li><b>Live Dashboard:</b> Real-time and historical data shown as cards &amp; charts (see Dashboard page).</li>
+    <li><b>Energy Cost Profile:</b> With 7.11 BDT/kWh, daily usage and costs are transparent and actionable for user.</li>
+    <li><b>Peak Identification:</b> Compressor cycles (see Power and Current graphs) clearly visible, enabling awareness and savings actions.</li>
+    <li><b>ROI:</b> Estimated payback for the IoT device under 1 year if advice is followed for energy optimization.</li>
+  </ul>
+
+  <div class="swot-pestle-row">
+    <div class="pestlecol">
+      <span class="section-title" style="margin-top:0;">PESTLE Analysis</span>
+      <ul>
+        <li><b>Political:</b> Government incentives possible; compliance with electrical standards required.</li>
+        <li><b>Economic:</b> Rising electricity prices make tech more attractive.</li>
+        <li><b>Social:</b> Awareness and smart home adoption increasing.</li>
+        <li><b>Technological:</b> IoT/cloud rapidly evolving, better export likely soon.</li>
+        <li><b>Legal:</b> Data privacy and hardware standards matter.</li>
+        <li><b>Environmental:</b> Enables real savings + carbon reduction.</li>
+      </ul>
+    </div>
+    <div class="swotcol">
+      <span class="section-title" style="margin-top:0;">SWOT Analysis</span>
+      <ul>
+        <li><b>Strengths:</b> Low cost, easy setup, powerful analytics/dashboard.</li>
+        <li><b>Weaknesses:</b> Cloud dependency; 5-min sampling skips surges.</li>
+        <li><b>Opportunities:</b> Scale to many devices/home, smarter analytics.</li>
+        <li><b>Threats:</b> Platform API changes, data privacy, cloud outages.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="highlight-card">
+    <span class="section-title">Conclusion</span>
+    <p>
+      This project proves that practical IoT-based energy monitoring is within reach for households and educational use. 
+      The dashboard clearly displays energy and cost data, empowering smart usage and savings. With growing smart home adoption, 
+      this approach offers strong engineering, business, and environmental value.
+    </p>
+    <br>
+    <small style="color:#abb3ba;">Summary &amp; implementation by Khalid Mahmud Joy, 03.08.2025.<br>For full details and code, see project GitHub repo.</small>
+  </div>
+</div>
+</body>
+</html>
