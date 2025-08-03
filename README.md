@@ -68,19 +68,18 @@ It uses a TOMZN 63A WiFi Smart Switch (Tuya platform) to collect genuine data ev
 ## 🏗️ File & Folder Structure
 
 /
-├── index.html # Introduction
-├── device.html # Device and appliance details
-├── dashboard.html # Data KPIs, table, search, charts, gauges
-├── cost-analysis.html # Per-day cost breakdown and graphs
-├── report.html # Project overview, summary, workflow, results
-├── controls.html # Demo control buttons
-├── style.css # Site-wide beautiful theme and layout
-├── data.csv # Raw CSV data, 5-min interval over 2+ days
-└── assets/
-├── iot.png
-└── ref.jpg
+- ├── index.html           
+- ├── device.html          
+- ├── dashboard.html        
+- ├── cost-analysis.html     
+- ├── report.html           
+- ├── controls.html        
+- ├── style.css            
+- ├── data.csv               
+- └── assets/
+    - ├── iot.png           
+    - └── ref.jpg            
 
----
 
 ## 🚦 Quick Start & Usage
 
