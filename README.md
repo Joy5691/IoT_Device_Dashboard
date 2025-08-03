@@ -3,6 +3,8 @@
 > **Monitor, analyze, and visualize real appliance energy data — live in your browser.**
 >
 > *Khalid Mahmud Joy · ID: 2022-3-60-159 · Green Computing (CSE407), East West University*
+# **Live project:**  
+# (https://joy5691.github.io/IoT_Device_Dashboard/))
 
 ## 🚀 Introduction
 
@@ -122,16 +124,7 @@ If you want to use *your own* appliance CSV, just replace `data.csv`.
 
 ### ✨ Open Source Libraries
 
-- [PapaParse](https://www.papaparse.com/) (CSV parsing)
-- [Chart.js](https://www.chartjs.org/) (Charts & gauges)
-- [Responsive CSS design](https://github.com/yourusername) (custom, MIT)
-
----
-
-## 📜 License
-
-This project is open-source MIT.  
-You may use, remix, or extend for coursework, research, or personal projects.
+- [Responsive CSS design](https://github.com/joy5691)
 
 ---
 
@@ -141,7 +134,7 @@ Got an idea? Improved data or control?
 Open a GitHub issue or pull request!
 
 **Live project:**  
-[https://yourusername.github.io/](https://yourusername.github.io/)
+(https://joy5691.github.io/IoT_Device_Dashboard/))
 
 ---
 
